@@ -3,6 +3,8 @@ package com.fnb.usermanagement.security.securityImpl;
 
 import com.fnb.usermanagement.entity.User;
 import com.fnb.usermanagement.security.JwtService;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,10 +17,10 @@ import java.util.Date;
 @Service
 public class JwtServiceImpl implements JwtService {
 
-    @Value("${secret}")
+    @Value("${jwt.secret}")
     private String secret;
 
-    @Value("${expiration-ms}")
+    @Value("${jwt.expiration-ms}")
     private Long expirationMs;
 
     private SecretKey signingkey(){
@@ -42,12 +44,28 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public boolean validateToken(String token) {
-        return false;
+    public boolean validateToken(String token, String email) {
+        try {
+            Claims claims = parseClaims(token);
+            boolean usernameMatched = claims.getSubject().equals(email);
+            boolean notExpired = claims.getExpiration().after(new Date());
+            return usernameMatched && notExpired;
+        } catch (ExpiredJwtException e){
+            return false;
+        }
     }
 
     @Override
     public String extractEmailFromToken(String token) {
-        return "";
+        return parseClaims(token).getSubject();
+    }
+
+
+    private Claims parseClaims(String token) {
+        return Jwts.parser()
+                .verifyWith(signingkey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 }
