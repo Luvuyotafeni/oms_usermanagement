@@ -10,6 +10,7 @@ import com.fnb.usermanagement.repository.UserRepository;
 import com.fnb.usermanagement.service.AuthService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,6 +20,8 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
 
     private final UserCredentialsRepository userCredentialsRepository;
+
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
@@ -33,7 +36,7 @@ public class AuthServiceImpl implements AuthService {
 
         UserCredential userCredential = UserCredential.builder()
                 .user(user)
-                .password(registerRequest.getPassword())
+                .password(passwordEncoder.encode(registerRequest.getPassword()))
                 .build();
         userCredentialsRepository.save(userCredential);
 
