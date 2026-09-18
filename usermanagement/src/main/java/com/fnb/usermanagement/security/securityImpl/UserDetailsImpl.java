@@ -5,6 +5,7 @@ import com.fnb.usermanagement.entity.UserCredential;
 import com.fnb.usermanagement.repository.UserCredentialsRepository;
 import com.fnb.usermanagement.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UserDetailsImpl implements UserDetailsService {
 
     private final UserRepository userRepository;

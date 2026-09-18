@@ -41,7 +41,7 @@ public class User {
         updatedAt = LocalDateTime.now();
 
         if(this.role==null){
-            this.role = Role.ADMIN;
+            this.role = Role.CUSTOMER;
         }
     }
 

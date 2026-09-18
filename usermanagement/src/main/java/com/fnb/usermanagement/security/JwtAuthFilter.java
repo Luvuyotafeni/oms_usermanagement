@@ -34,11 +34,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         String authHeader = request.getHeader(HEADER_AUTHORIZATION);
 
-        if (authHeader != null && authHeader.startsWith(BEARER_PREFIX)) {
+
+        // 1. If no Bearer header is present, skip token validation and continue filter chain
+        if (authHeader == null || !authHeader.startsWith(BEARER_PREFIX)) {
             filterChain.doFilter(request, response);
             return;
         }
-
         String token = authHeader.substring(BEARER_PREFIX.length());
 
         try {
