@@ -3,15 +3,42 @@ package com.fnb.usermanagement.security.securityImpl;
 
 import com.fnb.usermanagement.entity.User;
 import com.fnb.usermanagement.security.JwtService;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
 
 @Service
 public class JwtServiceImpl implements JwtService {
 
+    @Value("${secret}")
+    private String secret;
+
+    @Value("${expiration-ms}")
+    private Long expirationMs;
+
+    private SecretKey signingkey(){
+        return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+    }
+
 
     @Override
     public String generateToken(User user) {
-        return "";
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() +  expirationMs);
+
+        return Jwts.builder()
+                .subject(user.getEmail())
+                .claim("customerId", user.getCustomerId())
+                .claim("role", user.getRole().name())
+                .issuedAt(now)
+                .expiration(expiryDate)
+                .signWith(signingkey())
+                .compact();
     }
 
     @Override
