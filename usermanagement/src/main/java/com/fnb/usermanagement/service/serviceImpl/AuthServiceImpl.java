@@ -1,5 +1,7 @@
 package com.fnb.usermanagement.service.serviceImpl;
 
+import com.fnb.usermanagement.dto.LoginRequest;
+import com.fnb.usermanagement.dto.LoginResponse;
 import com.fnb.usermanagement.dto.RegisterRequest;
 import com.fnb.usermanagement.dto.RegisterResponse;
 import com.fnb.usermanagement.entity.Role;
@@ -42,6 +44,19 @@ public class AuthServiceImpl implements AuthService {
 
         return toUserResponse(user);
 
+    }
+
+    @Override
+    public LoginResponse login(LoginRequest loginRequest) {
+
+        User user =  userRepository.findByEmail(loginRequest.getEmail());
+
+        return LoginResponse.builder()
+                .token()
+                .customerId(user.getCustomerId())
+                .email(user.getEmail())
+                .role(user.getRole().name())
+                .build();
     }
 
 
